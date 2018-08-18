@@ -12,27 +12,7 @@ Vagrant.configure("2") do |config|
     vb.linked_clone = true
   end
 
-  # Common provisioning for all VMs
-  config.vm.provision "shell", inline: <<-SHELL
-    apt-get update
-    apt-get install -y python
-  SHELL
-
   # Define Multi-Machine environment
-  config.vm.define "master" do |master|
-    master.vm.network "private_network", ip: "192.168.56.100"
-    master.vm.hostname = "master"
-
-    # Install ansible and supporting packages
-    master.vm.provision "shell", inline: <<-SHELL
-      apt-get install -y software-properties-common
-      apt-add-repository -y ppa:ansible/ansible
-      apt-get update
-      apt-get install -y ansible python-netaddr
-    SHELL
-
-  end
-
   config.vm.define "web1" do |web1|
     web1.vm.network "private_network", ip: "192.168.56.110"
     web1.vm.hostname = "web1"
@@ -51,6 +31,25 @@ Vagrant.configure("2") do |config|
   config.vm.define "db2" do |db2|
     db2.vm.network "private_network", ip: "192.168.56.125"
     db2.vm.hostname = "db2"
+  end
+
+  config.vm.define "master" do |master|
+    master.vm.network "private_network", ip: "192.168.56.100"
+    master.vm.hostname = "master"
+    # Work around so private keys are mode 600
+    master.vm.synced_folder "./.vagrant/machines", "/machines", mount_options: ["dmode=775,fmode=600"]
+
+    # Provisioning using ansible on master
+    master.vm.provision "ansible_local" do |ansible|
+      ansible.playbook = "provision.yml"
+    end
+
+    # Provisioning using ansible on all other nodes
+    master.vm.provision "ansible_local" do |ansibl2|
+      ansibl2.playbook = "provision.yml"
+      ansibl2.limit = "nodes"
+      ansibl2.inventory_path = "provision_inventory"
+    end
   end
 
 end

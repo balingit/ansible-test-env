@@ -1,8 +1,8 @@
 [all]
-web1 ansible_ssh_host=192.168.56.110
-web2 ansible_ssh_host=192.168.56.115
-db1 ansible_ssh_host=192.168.56.120
-db2 ansible_ssh_host=192.168.56.125
+web1 ansible_ssh_host=web1.example.com
+web2 ansible_ssh_host=web2.example.com
+db1 ansible_ssh_host=db1.example.com
+db2 ansible_ssh_host=db2.example.com
 [web]
 web1
 web2
@@ -11,3 +11,5 @@ db1
 db2
 [backup]
 db2
+[all:vars]
+ansible_python_interpreter=/usr/bin/python3

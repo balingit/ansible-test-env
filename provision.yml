@@ -1,0 +1,38 @@
+---
+- hosts: master
+
+  tasks:
+  - name: generate ssh keys
+    shell: yes "" | ssh-keygen -N ""
+    args:
+      creates: $HOME/.ssh/id_rsa.pub
+
+  - name: set host_key_checking to false
+    become: yes
+    ini_file:
+      path: /etc/ansible/ansible.cfg
+      section: defaults
+      option: host_key_checking
+      value: False
+
+  - name: add nodes to /etc/hosts
+    become: yes
+    blockinfile:
+      path: /etc/hosts
+      block: |
+        192.168.56.110  web1.example.com        web1
+        192.168.56.115  web2.example.com        web2
+        192.168.56.120  db1.example.com         db1
+        192.168.56.125  db2.example.com         db2
+
+  - name: install python-netaddr
+    become: yes
+    apt:
+      name: python-netaddr
+
+- hosts: nodes
+  tasks:
+  - name: set authorized key
+    authorized_key:
+      user: vagrant
+      key: "{{ lookup('file', '/home/vagrant/.ssh/id_rsa.pub') }}"
