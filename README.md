@@ -17,5 +17,6 @@ then ansible is run on the control VM for provisioning.
 
 # Testing
 
-vagrant ssh master
-ansible -i /vagrant/inventory all -m ping
+Run:
++ vagrant ssh master
++ ansible -i /vagrant/inventory all -m ping
