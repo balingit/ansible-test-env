@@ -1,8 +1,8 @@
 [all]
-web1 ansible_ssh_host=web1.example.com
-web2 ansible_ssh_host=web2.example.com
-db1 ansible_ssh_host=db1.example.com
-db2 ansible_ssh_host=db2.example.com
+web1 ansible_ssh_host=web1.example.com ansible_ssh_private_key_file=/machines/web1/virtualbox/private_key
+web2 ansible_ssh_host=web2.example.com ansible_ssh_private_key_file=/machines/web2/virtualbox/private_key
+db1 ansible_ssh_host=db1.example.com ansible_ssh_private_key_file=/machines/db1/virtualbox/private_key
+db2 ansible_ssh_host=db2.example.com ansible_ssh_private_key_file=/machines/db2/virtualbox/private_key
 [web]
 web1
 web2

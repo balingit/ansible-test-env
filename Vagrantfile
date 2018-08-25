@@ -13,24 +13,18 @@ Vagrant.configure("2") do |config|
   end
 
   # Define Multi-Machine environment
-  config.vm.define "web1" do |web1|
-    web1.vm.network "private_network", ip: "192.168.56.110"
-    web1.vm.hostname = "web1"
+  (1..2).each do |x|
+    config.vm.define "web#{x}" do |web|
+      web.vm.network "private_network", ip: "192.168.56.11#{x}"
+      web.vm.hostname = "web#{x}"
+    end
   end
 
-  config.vm.define "web2" do |web2|
-    web2.vm.network "private_network", ip: "192.168.56.115"
-    web2.vm.hostname = "web2"
-  end
-
-  config.vm.define "db1" do |db1|
-    db1.vm.network "private_network", ip: "192.168.56.120"
-    db1.vm.hostname = "db1"
-  end
-
-  config.vm.define "db2" do |db2|
-    db2.vm.network "private_network", ip: "192.168.56.125"
-    db2.vm.hostname = "db2"
+  (1..2).each do |y|
+    config.vm.define "db#{y}" do |db|
+      db.vm.network "private_network", ip: "192.168.56.12#{y}"
+      db.vm.hostname = "db#{y}"
+    end
   end
 
   config.vm.define "master" do |master|
@@ -42,13 +36,6 @@ Vagrant.configure("2") do |config|
     # Provisioning using ansible on master
     master.vm.provision "ansible_local" do |ansible|
       ansible.playbook = "provision.yml"
-    end
-
-    # Provisioning using ansible on all other nodes
-    master.vm.provision "ansible_local" do |ansibl2|
-      ansibl2.playbook = "provision.yml"
-      ansibl2.limit = "nodes"
-      ansibl2.inventory_path = "provision_inventory"
     end
   end
 
