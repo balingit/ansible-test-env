@@ -1,0 +1,28 @@
+---
+- name: get cobbler.py
+  get_url:
+    url: https://raw.github.com/ansible/ansible/devel/contrib/inventory/cobbler.py
+    dest: /etc/ansible
+    mode: "+x"
+
+- name: discover ini file
+  vars:
+    target: /etc/ansible/cobbler.ini
+  command: grep "localhost/cobbler_api" {{target}}
+  register: grep_state
+  ignore_errors: true
+
+- name: get cobbler.ini
+  get_url:
+    url: https://raw.github.com/ansible/ansible/devel/contrib/inventory/cobbler.ini
+    dest: /etc/ansible
+  register: ini_state
+  when: grep_state.rc != 0
+
+- name: update cobbler.ini
+  lineinfile:
+    backrefs: yes
+    path: /etc/ansible/cobbler.ini
+    regexp: "PATH_TO_COBBLER_SERVER"
+    line: "host = http://localhost/cobbler_api"
+  when: ini_state.dest is defined

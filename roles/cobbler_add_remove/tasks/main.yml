@@ -1,0 +1,13 @@
+---
+# tasks file for cobbler_add_remove---
+- name: set variables for remove
+  set_fact:
+    cobbler_add_remove_script: cobbler_del.sh
+  when: cobbler_add_remove_state == "absent"
+  
+- name: add/remove cobbler primitives
+  script: "{{cobbler_add_remove_script}}"
+  ignore_errors: true
+
+- name: refresh cobbler.py cache
+  command: /etc/ansible/cobbler.py --refresh-cache

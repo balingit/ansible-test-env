@@ -1,0 +1,9 @@
+---
+# tasks file for cobbler_inventory---
+- name: create cobbler_inventory
+  include_tasks: create.yml
+  when: cobbler_inventory_state == "present"
+
+- name: destroy cobbler_inventory
+  include_tasks: destroy.yml
+  when: cobbler_inventory_state == "absent"

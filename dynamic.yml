@@ -4,90 +4,44 @@
   become: yes
 
   tasks:
+    - name: set variables
+      set_fact:
+        cobbler_state: absent
+        cobbler_inventory_state: absent
+        cobbler_add_remove_state: absent
+        ansible_var_files_state: absent
+      tags:
+        - never
+        - destroy
 
-  - name: get cobbler.py
-    get_url:
-       url: https://raw.github.com/ansible/ansible/devel/contrib/inventory/cobbler.py
-       dest: /etc/ansible
-       mode: "+x"
+    - import_role: 
+        name: cobbler
+      tags:
+        - create
 
-  - name: check if cobbler.ini exist
-    stat:
-       path: /etc/ansible/cobbler.ini
-    register: result_stat
+    - import_role: 
+        name: cobbler_inventory
+      tags:
+        - create
 
-  - name: get cobbler.ini
-    get_url:
-       url: https://raw.github.com/ansible/ansible/devel/contrib/inventory/cobbler.ini
-       dest: /etc/ansible
-    when: result_stat.stat.path is not defined
-
-  - name: update cobbler.ini
-    lineinfile:
-       backrefs: yes
-       path: /etc/ansible/cobbler.ini
-       regexp: "PATH_TO_COBBLER_SERVER"
-       line: "host = http://localhost/cobbler_api"
-
-  - name: install cobbler
-    apt:
-       name: cobbler
-
-  - name: resolve apache python module conflict
-    apache2_module:
-       name: python
-       state: absent
-
-  - name: start apache and cobbler
-    systemd:
-       name: "{{ item }}"
-       state: started
-       enabled: yes
-    loop:
-       - apache2
-       - cobbler
-
-  - name: check for cobbler primitives
-    command: cobbler distro list
-    register: result_check
-
-  - name: delete cobbler primitives
-    vars:
-       del_cobbler_entries: false
-    command: /vagrant/cobbler_del.sh
-    register: result_cobbler_del
-    when: del_cobbler_entries and result_check.stdout != ""
-
-  - name: create cobbler primitives
-    command: /vagrant/cobbler_add.sh
-    register: result_cobbler_add
-    when: (result_check.stdout == "") or (result_cobbler_del is not skipped)
-
-  - name: refresh cobbler.py cache
-    command: /etc/ansible/cobbler.py --refresh-cache
-    when: result_cobbler_add is not skipped
-
-  - name: create vars directory
-    file:
-       path: /etc/ansible/{{ item }}
-       state: directory
-    loop:
-       - group_vars
-       - host_vars
-
-  - name: create host_vars files
-    copy:
-       src: /vagrant/allvars
-       dest: /etc/ansible/group_vars/all
-
-  - name: create goup_vars all file
-    vars:
-       dom_name: example.com
-    template:
-       src: /vagrant/key_file.j2
-       dest: /etc/ansible/host_vars/{{ item }}.{{ dom_name }}
-    loop:
-       - web1
-       - web2
-       - db1
-       - db2
+    - import_role: 
+        name: cobbler_add_remove
+      tags:
+        - always
+        
+    - import_role:
+        name: ansible_var_files
+      tags:
+        - always
+      
+    - import_role: 
+        name: cobbler_inventory
+      tags:
+        - never
+        - destroy
+        
+    - import_role: 
+        name: cobbler
+      tags:
+        - never
+        - destroy

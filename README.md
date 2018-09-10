@@ -17,7 +17,7 @@ then ansible is run on the control VM for provisioning.
 
 # Private key file
 
-Since this is a test environemt in a private network, the vagrant ssh keys are used instead of
+Since this is a test environment in a private network, the vagrant ssh keys are used instead of
 generating ssh keys. The private keys are mounted on /machines and the ansible_ssh_private_key_file
 parameter is used in the inventory file
 

@@ -1,0 +1,11 @@
+---
+- name: "{{cobbler_inventory_state}} cobbler.py"
+  file:
+    path: /etc/ansible/cobbler.py
+    state: "{{cobbler_inventory_state}}"
+
+- name: "{{cobbler_inventory_state}} cobbler.ini"
+  file:
+    path: /etc/ansible/cobbler.ini
+    state: "{{cobbler_inventory_state}}"
+

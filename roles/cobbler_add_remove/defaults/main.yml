@@ -1,0 +1,4 @@
+---
+# defaults file for cobbler_add_remove
+cobbler_add_remove_state: present
+cobbler_add_remove_script: cobbler_add.sh

@@ -1,0 +1,4 @@
+- name: resolve apache python module conflict
+  apache2_module:
+    name: python
+    state: absent

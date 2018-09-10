@@ -1,0 +1,7 @@
+---
+- name: cobbler
+  apt:
+    name: cobbler
+    state: "{{cobbler_state}}"
+    purge: "{{apt_purge}}"
+    autoremove: "{{apt_autoremove}}"

@@ -1,0 +1,28 @@
+---
+# tasks file for cobbler---
+- name: set variables to install
+  set_fact:
+    apt_purge: no
+    apt_autoremove: no
+    systemd_state: started
+    systemd_enabled: yes
+  when: cobbler_state == "present"
+
+- name: set variables to uninstall
+  set_fact:
+    apt_purge: yes
+    apt_autoremove: yes
+    systemd_state: stopped
+    systemd_enabled: no
+  when: cobbler_state == "absent"
+
+- include_tasks: systemd.yml
+  when: cobbler_state == "absent"
+
+- import_tasks: cobbler.yml
+
+- include_tasks: a2dismod.yml
+  when: cobbler_state == "present"
+
+- include_tasks: systemd.yml
+  when: cobbler_state == "present"

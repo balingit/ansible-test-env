@@ -1,0 +1,40 @@
+---
+# tasks file for ansible_var_files---
+- name: create vars directory
+  file:
+    path: /etc/ansible/{{ansible_var_files_directory_item}}
+    state: directory
+  loop: "{{ansible_var_files_directory}}"
+  loop_control:
+    loop_var: ansible_var_files_directory_item
+  when: ansible_var_files_state == "present"
+
+- name: create group_vars files
+  copy:
+    src: "{{ansible_var_files_copy_src}}"
+    dest: /etc/ansible/group_vars/{{ansible_var_files_copy_dest}}
+  when: ansible_var_files_state == "present"
+
+- name: create host_vars files
+  template:
+    src: "{{ansible_var_files_template}}"
+    dest: /etc/ansible/host_vars/{{ansible_var_files_hostvar_item}}.{{ansible_var_files_hostvar_domain}}
+  loop: "{{ansible_var_files_hostvar}}"
+  loop_control:
+    loop_var: ansible_var_files_hostvar_item
+  when: ansible_var_files_state == "present"
+
+- name: delete group_vars files
+  file:
+    path: /etc/ansible/group_vars/{{ansible_var_files_copy_dest}}
+    state: "{{ansible_var_files_state}}"
+  when: ansible_var_files_state == "absent"
+
+- name: delete_host_vars files
+  file:
+    path: /etc/ansible/host_vars/{{ansible_var_files_hostvar_delete}}.{{ansible_var_files_hostvar_domain}}
+    state: "{{ansible_var_files_state}}"
+  loop: "{{ansible_var_files_hostvar}}"
+  loop_control:
+    loop_var: ansible_var_files_hostvar_delete
+  when: ansible_var_files_state == "absent"

@@ -1,0 +1,15 @@
+---
+# defaults file for ansible_var_files
+ansible_var_files_state: present
+ansible_var_files_directory:
+  - host_vars
+  - group_vars
+ansible_var_files_copy_src: interpreter
+ansible_var_files_copy_dest: all
+ansible_var_files_template: key_file.j2
+ansible_var_files_hostvar_domain: example.com
+ansible_var_files_hostvar:
+  - web1
+  - web2
+  - db1
+  - db2

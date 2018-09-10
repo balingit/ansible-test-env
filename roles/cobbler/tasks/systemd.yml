@@ -1,0 +1,11 @@
+---
+- name: "{{systemd_state}} apache and cobbler"
+  systemd:
+    name: "{{systemd_item}}"
+    state: "{{systemd_state}}"
+    enabled: "{{systemd_enabled}}"
+  loop:
+    - apache2
+    - cobbler
+  loop_control:
+    loop_var: systemd_item
